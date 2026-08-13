@@ -1,0 +1,190 @@
+--[[
+__   __              _   _       _     
+\ \ / /_ _ _ __  ___| | | |_   _| |__  
+ \ V / _` | '_ \/ __| |_| | | | | '_ \ 
+
+  | | (_| | | | \__ \  _  | |_| | |_) |
+  |_|\__,_|_| |_|___/_| |_|\__,_|_.__/ 
+  
+  [+] Name: Yanhub
+  [+] Game: Violence Distrik / Survival
+--]]
+
+local Library = loadstring(game:HttpGet("https://githubusercontent.com"))() -- Contoh UI Library
+local Window = Library:CreateWindow("Yanhub - Violence Distrik")
+
+-- Local Player & Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+
+-- ==========================================
+-- 1. KILLER TABS
+-- ==========================================
+local KillerTab = Window:CreateFolder("Killer Features")
+
+KillerTab:Toggle("OP Aim Veil", function(state)
+    _G.AimVeil = state
+    RunService.RenderStepped:Connect(function()
+        if _G.AimVeil then
+            -- Logika mengunci target terdekat secara instan
+            -- Masukkan fungsi FOV atau silent aim di sini
+        end
+    end)
+end)
+
+KillerTab:Toggle("Anti Pistol & Dagger", function(state)
+    _G.AntiWeapon = state
+    -- Menghapus penalti atau efek stun dari senjata survival
+end)
+
+KillerTab:Toggle("Anti Looping", function(state)
+    _G.AntiLoop = state
+    -- Mempercepat penghancuran pallet atau rintangan agar tidak di-loop
+end)
+
+KillerTab:Toggle("Anti Flashlight", function(state)
+    _G.AntiFlash = state
+    -- Kebal terhadap efek buta (blind) dari senter
+end)
+
+KillerTab:Toggle("Skill Hidden & No Cooldown", function(state)
+    _G.NoCooldown = state
+    -- Memotong remote event cooldown kemampuan killer
+end)
+
+
+-- ==========================================
+-- 2. SURVIVAL TABS
+-- ==========================================
+local SurvivalTab = Window:CreateFolder("Survival Features")
+
+SurvivalTab:Toggle("Auto Dagger", function(state)
+    _G.AutoDagger = state
+    -- Otomatis menyerang killer jika berada di jarak dekat
+end)
+
+SurvivalTab:Toggle("Auto Generator", function(state)
+    _G.AutoGen = state
+    -- Otomatis menyelesaikan skill check pada generator
+end)
+
+SurvivalTab:Toggle("OP Crosshair", function(state)
+    -- Memunculkan custom crosshair di tengah layar
+end)
+
+SurvivalTab:Toggle("Block Aim & Knock", function(state)
+    _G.BlockKnock = state
+    -- Mencegah killer mengunci atau menjatuhkan karakter
+end)
+
+SurvivalTab:Toggle("Good Game (Auto Perfect)", function(state)
+    -- Selalu mendapatkan nilai sempurna/perfect saat interaksi
+end)
+
+SurvivalTab:Toggle("Fast Vault", function(state)
+    _G.FastVault = state
+    -- Mempercepat animasi melompati jendela/pallet
+end)
+
+SurvivalTab:Toggle("Anti Slow (Fall Damage)", function(state)
+    _G.AntiFallSlow = state
+    -- Menghapus efek melambat saat jatuh dari tempat tinggi
+end)
+
+SurvivalTab:Toggle("Flee Killer (Auto Run)", function(state)
+    _G.FleeKiller = state
+    -- Otomatis lari menjauh jika koordinat Killer mendekat
+end)
+
+SurvivalTab:Toggle("Instant Heal", function(state)
+    _G.InstantHeal = state
+    -- Mempercepat proses healing diri sendiri / teman
+end)
+
+
+-- ==========================================
+-- 3. VISUAL / ESP TABS (Melihat Objek)
+-- ==========================================
+local VisualTab = Window:CreateFolder("Visual & ESP")
+
+local function CreateESP(object, color, text)
+    if object and not object:FindFirstChild("Yanhub_ESP") then
+        local Highlight = Instance.new("Highlight")
+        Highlight.Name = "Yanhub_ESP"
+        Highlight.FillColor = color
+        Highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+        Highlight.Parent = object
+        
+        local Billboard = Instance.new("BillboardGui")
+        Billboard.Name = "Yanhub_Label"
+        Billboard.Size = UDim2.new(0, 100, 0, 50)
+        Billboard.AlwaysOnTop = true
+        
+        local Label = Instance.new("TextLabel")
+        Label.Size = UDim2.new(1, 0, 1, 0)
+        Label.BackgroundTransparency = 1
+        Label.Text = text
+        Label.TextColor3 = color
+        Label.TextSize = 14
+        Label.Parent = Billboard
+        Billboard.Parent = object
+    end
+end
+
+VisualTab:Toggle("Melihat Killer & SCP", function(state)
+    _G.EnemyESP = state
+    -- Logika mencari player dengan role Killer / SCP dan memberi Highlight Merah
+end)
+
+VisualTab:Toggle("Melihat Survival", function(state)
+    _G.SurvESP = state
+    -- Memberi Highlight Biru pada teman satu tim
+end)
+
+VisualTab:Toggle("Melihat Gate & Vault", function(state)
+    -- Mencari objek bernama "Gate" atau "Vault" di Workspace
+end)
+
+VisualTab:Toggle("Melihat Pallet & Generator", function(state)
+    -- Menampilkan lokasi pallet untuk looping dan generator sisa
+end)
+
+VisualTab:Toggle("Melihat Orang Terkena Hook/Die", function(state)
+    -- Memberikan pin lokasi pada teman yang sedang sekarat atau di-hook
+end)
+
+
+-- ==========================================
+-- 4. UTILITIES TABS (Pergerakan)
+-- ==========================================
+local UtilTab = Window:CreateFolder("Utilities")
+
+UtilTab:Toggle("Invisible", function(state)
+    if state then
+        LocalPlayer.Character.LowerTorso.Root:Destroy() -- Contoh dasar break joints untuk invisinle (tergantung game)
+    end
+end)
+
+UtilTab:Toggle("No Clip", function(state)
+    _G.NoClip = state
+    RunService.Stepped:Connect(function()
+        if _G.NoClip and LocalPlayer.Character then
+            for _, v in pairs(LocalPlayer.Character:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
+                end
+            end
+        end
+    end)
+end)
+
+UtilTab:Toggle("Fullbright & No Fog", function(state)
+    if state then
+        game:GetService("Lighting").Ambient = Color3.fromRGB(255, 255, 255)
+        game:GetService("Lighting").FogEnd = 999999
+    else
+        game:GetService("Lighting").ResetToAtmosphere -- Kembali ke standar game
+    end
+end)
